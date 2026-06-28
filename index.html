@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>★·.·´¯`·.·★ sofianonazzeccauna.com ★·.·´¯`·.·★</title>
+<!-- Favicon farfallina viola in SVG, niente file esterni -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext y='14' font-size='14'%3E%F0%9F%A6%8B%3C/text%3E%3C/svg%3E">
+<style>
+  /* ============================================================
+     LE CAZZATINE DI SOFIA — restyling dark Y2K emo/goth "void.exe"
+     Stessa struttura, sola pelle grafica: viola/nero + rosa neon.
+     Tutti i colori sono qui sotto, in un unico posto.
+     ============================================================ */
+  :root{
+    --pink:#ff3d9a;          /* rosa neon principale */
+    --pink-lt:#ff85c8;       /* rosa chiaro */
+    --pink-glow:rgba(255,61,154,.55);
+    --viola:#7a2ed6;         /* viola medio */
+    --viola-lt:#a366ff;      /* viola chiaro */
+    --bg-0:#0a0512;          /* sfondo più scuro */
+    --bg-1:#160a2b;          /* corpo delle finestre */
+    --bg-2:#1e0f3a;          /* schede / card */
+    --bg-title:#3a1a6e;      /* barra titolo scura */
+    --ink:#ead9ff;           /* testo lilla chiaro */
+    --ink-dim:#b89ae0;       /* testo attenuato */
+    --linea:#6a2cae;         /* bordi viola */
+    --verde:#5dff9b;         /* cifre del contatore */
+  }
+
+  /* sfondo scuro tipo "void": maculato viola + puntini stella */
+  html{
+    background:
+      radial-gradient(circle at 10px 10px, rgba(200,160,255,.16) 1.4px, transparent 2px),
+      radial-gradient(circle at 28px 26px, rgba(255,133,200,.12) 1.4px, transparent 2px),
+      radial-gradient(circle at 22% 28%, rgba(122,46,214,.30), transparent 42%),
+      radial-gradient(circle at 80% 72%, rgba(255,61,154,.18), transparent 46%),
+      repeating-linear-gradient(45deg, #0c0518 0 22px, #130726 22px 44px);
+    background-size:40px 40px,52px 52px,100% 100%,100% 100%,62px 62px;
+    background-attachment:fixed;
+  }
+  body{
+    margin:0;
+    font-family:"Verdana","Tahoma","Geneva",sans-serif;
+    color:var(--ink);
+    text-align:center;
+    cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Ctext y='22' font-size='22'%3E%E2%9C%A8%3C/text%3E%3C/svg%3E") 4 4, auto;
+    overflow-x:hidden;
+  }
+
+  /* decorazioni grafiche fisse agli angoli (non toccano il layout) */
+  html::before,html::after,body::before,body::after{
+    position:fixed;z-index:0;pointer-events:none;opacity:.55;
+    filter:drop-shadow(0 0 6px rgba(122,46,214,.6));
+  }
+  html::before{content:"🕸️";top:-6px;left:-4px;font-size:78px;}
+  html::after{content:"🕸️";bottom:-6px;right:-4px;font-size:78px;transform:scaleX(-1);}
+  body::before{content:"🦋";top:40%;left:10px;font-size:42px;}
+  body::after{content:"🦇";bottom:14%;right:14px;font-size:40px;}
+
+  /* barra "indirizzo" finta in cima, in chrome scuro */
+  .barra-url{
+    position:relative;z-index:2;
+    background:linear-gradient(#2a1450,#160a2b);
+    border-bottom:2px solid var(--viola);
+    font-family:"Tahoma","Geneva",sans-serif;
+    font-size:12px;color:var(--ink);
+    text-align:left;padding:4px 8px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .barra-url .campo{
+    flex:1;background:#0c0518;border:2px inset #3a1f6b;color:#cdb6ff;
+    padding:2px 6px;border-radius:2px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .barra-url .vai{
+    background:linear-gradient(var(--viola-lt),#5e22b0);border:2px outset #b98cff;
+    padding:1px 8px;font-size:11px;cursor:pointer;color:#fff;
+  }
+
+  /* marquee con scritta scorrevole */
+  .marquee{
+    position:relative;z-index:2;
+    background:#0c0518;
+    color:var(--pink);
+    font-weight:bold;font-size:15px;
+    border-top:2px solid var(--viola);
+    border-bottom:2px solid var(--viola);
+    padding:4px 0;letter-spacing:1px;
+    text-shadow:0 0 6px var(--pink);
+  }
+
+  .contenitore{
+    max-width:880px;margin:14px auto 40px;padding:0 10px;
+    position:relative;z-index:2;
+  }
+
+  /* titolo "WordArt" → testo cromato rosa stile void.exe */
+  .wordart{
+    font-family:"Arial Black",Impact,"Tahoma",sans-serif;
+    font-size:54px;line-height:1.05;margin:18px 0 6px;
+    font-weight:900;font-style:italic;letter-spacing:-1px;
+    background:linear-gradient(#ffffff 0%,#ffd6ef 30%,#ff4da6 52%,#b81e6e 66%,#ff8fd0 100%);
+    -webkit-background-clip:text;background-clip:text;
+    color:transparent;-webkit-text-fill-color:transparent;
+    -webkit-text-stroke:1.5px #2a0b4a;
+    filter:drop-shadow(2px 3px 0 #15082b) drop-shadow(0 0 14px var(--pink-glow));
+    transform:skewX(-4deg);
+  }
+  .sotto-titolo{
+    font-size:18px;color:var(--pink-lt);
+    background:var(--bg-1);
+    display:inline-block;padding:3px 14px;border-radius:14px;
+    border:2px dotted var(--pink);margin-bottom:6px;
+    box-shadow:0 0 10px var(--pink-glow);
+    transform:rotate(-2deg);
+  }
+
+  .blink{animation:blink 1s steps(2,start) infinite;}
+  @keyframes blink{to{visibility:hidden;}}
+
+  .rainbow{
+    background:linear-gradient(90deg,#ff3d9a,#a366ff,#5dff9b,#a366ff,#ff3d9a);
+    background-size:300% 100%;
+    -webkit-background-clip:text;background-clip:text;
+    color:transparent;animation:scorri 6s linear infinite;
+    font-weight:bold;
+  }
+  @keyframes scorri{to{background-position:300% 0;}}
+
+  /* riquadri stile "finestra" scura */
+  .box{
+    background:var(--bg-1);
+    border:2px solid var(--viola);
+    border-radius:8px;
+    margin:22px auto;padding:16px 20px;
+    box-shadow:0 0 0 2px #000,6px 6px 0 rgba(122,46,214,.28),
+               0 8px 22px rgba(0,0,0,.6),inset 0 0 28px rgba(122,46,214,.15);
+    text-align:left;
+  }
+  .box h2{
+    margin:0 0 12px;text-align:center;
+    font-size:24px;color:#fff;
+    background:linear-gradient(var(--viola-lt),var(--bg-title));
+    border-radius:8px;padding:6px;
+    text-shadow:1px 1px 0 #000,0 0 8px var(--pink-glow);
+    border:2px solid var(--pink);
+  }
+
+  /* divisore glitterato */
+  .divisore{
+    font-size:22px;letter-spacing:4px;margin:18px 0;
+    color:var(--pink);text-align:center;
+    text-shadow:0 0 8px var(--pink),0 0 2px #fff;
+  }
+
+  /* la lista delle cazzatine */
+  ol.cazzatine{
+    counter-reset:caz;list-style:none;padding:0;margin:0;
+    font-size:18px;line-height:1.5;
+  }
+  ol.cazzatine li{
+    counter-increment:caz;
+    background:var(--bg-2);
+    border-left:8px solid var(--pink);
+    margin:10px 0;padding:10px 12px 10px 46px;
+    border-radius:6px;position:relative;color:var(--ink);
+    box-shadow:2px 2px 0 rgba(122,46,214,.5),inset 0 0 18px rgba(255,61,154,.06);
+  }
+  ol.cazzatine li::before{
+    content:counter(caz);
+    position:absolute;left:8px;top:50%;transform:translateY(-50%);
+    width:28px;height:28px;line-height:28px;text-align:center;
+    background:var(--pink);color:#1a0733;border-radius:50%;
+    font-weight:bold;border:2px solid #fff;box-shadow:0 0 8px var(--pink);
+  }
+  ol.cazzatine li.placeholder{
+    opacity:.6;font-style:italic;border-left-style:dashed;
+  }
+
+  .gusti{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+  .gusti .scheda{
+    background:linear-gradient(#2a1450,#160a2b);
+    border:2px solid var(--viola);border-radius:10px;
+    padding:8px 14px;min-width:140px;color:var(--ink);
+    font-size:15px;box-shadow:0 0 10px rgba(122,46,214,.35);
+  }
+  .gusti .scheda b{display:block;font-size:13px;color:var(--pink-lt);text-transform:uppercase;}
+  .gusti .scheda span{font-size:20px;}
+
+  ul.hobby{list-style:none;padding:0;margin:6px 0 14px;display:flex;flex-wrap:wrap;gap:8px;}
+  ul.hobby li{
+    background:linear-gradient(#2a1450,#160a2b);
+    border:2px solid var(--viola);border-radius:20px;
+    padding:5px 14px;font-size:16px;color:var(--ink);font-weight:bold;
+    box-shadow:0 0 8px rgba(122,46,214,.3);
+  }
+  ul.hobby li span{font-size:18px;margin-right:4px;}
+
+  /* contatore visite a "lampadine" */
+  .contatore{
+    display:inline-flex;gap:3px;background:#000;padding:5px;border-radius:4px;
+    border:2px solid var(--pink);box-shadow:0 0 12px var(--pink-glow);
+  }
+  .contatore span{
+    font-family:"Courier New",monospace;font-size:24px;font-weight:bold;
+    background:#0b0518;color:var(--verde);width:20px;text-align:center;border-radius:2px;
+    text-shadow:0 0 6px var(--verde);
+  }
+
+  .musica button{
+    font-family:inherit;font-size:16px;cursor:pointer;
+    background:linear-gradient(var(--viola-lt),#5e22b0);
+    border:2px outset #b98cff;border-radius:8px;padding:8px 16px;
+    color:#fff;font-weight:bold;
+    text-shadow:0 0 6px var(--pink-glow);box-shadow:0 0 12px rgba(163,102,255,.5);
+  }
+  .musica button:active{border-style:inset;}
+  .musica .player{
+    display:block;max-width:540px;margin:6px auto 0;
+    border-radius:12px;border:2px solid var(--viola);
+    box-shadow:0 0 14px rgba(122,46,214,.5);
+  }
+
+  footer{
+    margin:30px auto 10px;font-size:13px;color:var(--ink-dim);
+    background:#0c0518;display:inline-block;
+    padding:8px 16px;border-radius:10px;border:2px dashed var(--viola);
+  }
+
+  a{color:var(--pink-lt);font-weight:bold;text-decoration:none;}
+  a:hover{color:#fff;text-shadow:0 0 8px var(--pink);}
+  @media(max-width:560px){.wordart{font-size:34px;}body::before,body::after{display:none;}}
+
+  /* 🥚 easter egg: la firma nascosta di Matteo (digita "matteo") */
+  #firma-egg{
+    position:fixed;inset:0;z-index:50;display:none;
+    align-items:center;justify-content:center;
+    background:rgba(10,5,18,.72);
+  }
+  #firma-egg.show{display:flex;}
+  .egg-win{
+    width:min(360px,86vw);background:var(--bg-1);
+    border:2px solid var(--pink);border-radius:10px;
+    box-shadow:0 0 0 2px #000,0 0 30px var(--pink-glow);
+    animation:eggpop .35s cubic-bezier(.2,1.4,.4,1);
+  }
+  @keyframes eggpop{from{transform:scale(.5) rotate(-6deg);opacity:0;}to{transform:none;opacity:1;}}
+  .egg-bar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:5px 8px;font:bold 12px "Tahoma",sans-serif;color:#fff;
+    background:linear-gradient(var(--viola-lt),var(--bg-title));
+    border-bottom:2px solid var(--pink);border-radius:8px 8px 0 0;
+    text-shadow:1px 1px 0 #000;
+  }
+  .egg-bar button{
+    background:linear-gradient(#caa6ff,#7a3edb);border:1px solid #fff;border-radius:3px;
+    color:#1a0a33;font-weight:bold;cursor:pointer;width:20px;height:18px;line-height:1;
+  }
+  .egg-body{padding:18px 16px;text-align:center;color:var(--ink);}
+  .egg-star{font-size:26px;color:var(--pink);text-shadow:0 0 8px var(--pink);}
+  .egg-title{font-size:18px;margin:6px 0;}
+  .egg-title b{
+    background:linear-gradient(#fff,#ff85c8,#ff3d9a);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .egg-sub{font-size:14px;color:var(--pink-lt);margin:4px 0;}
+  .egg-hint{font-size:11px;color:var(--ink-dim);margin-top:10px;}
+</style>
+</head>
+<body>
+
+  <!-- finta barra indirizzo del browser -->
+  <div class="barra-url">
+    <span>🌐</span>
+    <span class="campo">http://www.sofianonazzeccauna.com/index.html</span>
+    <span class="vai">Vai!</span>
+  </div>
+
+  <!-- scritta scorrevole -->
+  <marquee class="marquee" scrollamount="6">
+    ♥ BENVENUTI NEL SITO UFFICIALISSIMO DI SOFIA ♥ … qui trovate TUTTE le sue cazzatine ♥ … aggiungetevi ai preferiti (Ctrl+D)!!! ♥ … best viewed con Internet Explorer 6 a 800x600 ♥
+  </marquee>
+
+  <div class="contenitore">
+
+    <h1 class="wordart">Sofia Non Ne Azzecca Una</h1>
+    <div class="sotto-titolo">★ il sito delle cazzatine di Sofia ★</div>
+    <p class="blink rainbow" style="font-size:20px;">·٠•● Sotto Costruzione (per sempre) ●•٠·</p>
+
+    <!-- contatore visite -->
+    <div class="box" style="text-align:center;">
+      <p style="margin:0 0 6px;">Sei il visitatore numero:</p>
+      <div class="contatore" id="contatore">
+        <span>0</span><span>0</span><span>0</span><span>1</span><span>3</span><span>3</span><span>7</span>
+      </div>
+      <p style="margin:8px 0 0;font-size:13px;">(probabilmente sei sempre tu, Sofia)</p>
+    </div>
+
+    <div class="divisore">⋆｡˚ ☁︎ ˚｡⋆｡˚☽˚｡⋆ ♡ ⋆｡˚ ☾ ˚｡⋆ ☁︎ ˚｡⋆</div>
+
+    <!-- chi è Sofia -->
+    <div class="box">
+      <h2>♡ Chi è Sofia ♡</h2>
+      <p><b>Sofia</b> è una <b>neo-maggiorenne di 21 anni</b> 🎂, studentessa di <b>Restauro</b>
+         all'<b>Università di Venaria</b> 🎨. È la persona più importante di tutto il World Wide Web e,
+         diciamolo, <u>non ne azzecca una</u>… ma le vogliamo bene lo stesso. 😇</p>
+
+      <p style="margin-bottom:4px;"><b>★ I suoi hobby preferiti ★</b></p>
+      <ul class="hobby">
+        <li><span>🧟</span> Project Zomboid</li>
+        <li><span>🚬</span> Drummini</li>
+        <li><span>📺</span> Martin Sal (lo streamer)</li>
+      </ul>
+
+      <p>Scorri giù per scoprire la leggendaria lista di tutte le sue cazzatine, una per una. 👇</p>
+    </div>
+
+    <div class="divisore">♥•·.·´¯`·.·•♥•·.·´¯`·.·•♥•·.·´¯`·.·•♥</div>
+
+    <!-- LA SEZIONE PRINCIPALE -->
+    <div class="box">
+      <h2>★ Le Cazzatine di Sofia ★</h2>
+      <p style="text-align:center;font-size:14px;">
+        (Top secret. Lista in continuo aggiornamento perché Sofia non si ferma mai.)
+      </p>
+
+      <!-- ============================================================
+           👉 QUI VANNO LE CAZZATINE DI SOFIA 👈
+           Sostituisci/aggiungi le <li> qui sotto.
+           Ogni cazzatina = una riga <li>...tua frase...</li>
+           ============================================================ -->
+      <ol class="cazzatine" id="lista-cazzatine">
+        <li>Le piacciono i vampiri 🧛</li>
+        <li>Le piacciono i preti ⛪</li>
+        <li>Il linguaggio non verbale non è scientifico 🤔</li>
+        <li>La bolla (anossia) 🫧 <small style="opacity:.7;">— in ambito di restauro</small></li>
+        <li>Si impegna dal 1921 a decalcificare la ghiandola pineale 🧠</li>
+      </ol>
+    </div>
+
+    <div class="divisore">⋆⭒˚｡⋆ ✿ ⋆⭒˚｡⋆ ✿ ⋆⭒˚｡⋆ ✿ ⋆⭒˚｡⋆ ✿ ⋆⭒˚｡⋆</div>
+
+    <!-- gusti -->
+    <div class="box">
+      <h2>♥ I Gusti di Sofia ♥</h2>
+      <div class="gusti">
+        <div class="scheda"><b>Colore preferito</b><span>💜</span><br>viola (scontato)</div>
+        <div class="scheda"><b>Animale</b><span>🐋</span><br>balena</div>
+        <div class="scheda"><b>Cibo preferito</b><span>🥣</span><br>zuppa di finocchi</div>
+        <div class="scheda"><b>Canzone</b><span>🧛</span><br>Dracula Yeye</div>
+        <div class="scheda"><b>Sogno</b><span>🕵️</span><br>scoprire chi ha<br>davvero ucciso JFK</div>
+      </div>
+    </div>
+
+    <!-- jukebox: la canzone preferita di Sofia -->
+    <div class="box musica" style="text-align:center;">
+      <h2>♫ Il Juke-Box di Sofia ♫</h2>
+      <p>La canzone del cuore di Sofia: <b>«Dracula Yeye»</b> 🧛🎸 — premi play!</p>
+      <iframe class="player"
+              src="https://open.spotify.com/embed/track/0AuKb53DI6JIRL883S7poL?utm_source=generator"
+              width="100%" height="152" frameborder="0" loading="lazy"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              title="Dracula Yeye — la canzone preferita di Sofia"></iframe>
+      <p style="font-size:13px;margin-top:12px;">…oppure ascolta la mitica sigla 8-bit del sito 👇</p>
+      <button id="play">▶ Riproduci la sigla ♪</button>
+      <p style="font-size:12px;margin-top:6px;">(per Spotify serve internet; la sigla 8-bit funziona sempre)</p>
+    </div>
+
+    <footer>
+      © 2003 sofianonazzeccauna.com ♥ — Tutti i diritti riservatissimi a Sofia<br>
+      ⏰ Ultimo aggiornamento: oggi pomeriggio • 📧 webmaster: sofia@sofianonazzeccauna.com
+    </footer>
+
+  </div>
+
+  <!-- 🥚 EASTER EGG: digita "matteo" sulla tastiera per far comparire la firma -->
+  <div id="firma-egg" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="egg-win">
+      <div class="egg-bar"><span>✶ firma.exe</span><button id="egg-close" aria-label="chiudi">✕</button></div>
+      <div class="egg-body">
+        <div class="egg-star">✧･ﾟ*☆*ﾟ･✧</div>
+        <p class="egg-title">~ coded with 🖤 by <b>Matteo</b> ~</p>
+        <p class="egg-sub">per Sofia, che non ne azzecca una 💜</p>
+        <p class="egg-hint">(premi ESC o ✕ per chiudere)</p>
+      </div>
+    </div>
+  </div>
+
+<script>
+  /* contatore che fa "ding" e sale di qualche visita */
+  (function(){
+    var box=document.getElementById('contatore');
+    var n=parseInt([].map.call(box.children,function(s){return s.textContent;}).join(''),10);
+    setInterval(function(){
+      n+=Math.floor(Math.random()*3);
+      var s=String(n).padStart(7,'0').split('');
+      [].forEach.call(box.children,function(c,i){c.textContent=s[i];});
+    },2500);
+  })();
+
+  /* scia di stelline che segue il mouse */
+  (function(){
+    document.addEventListener('mousemove',function(e){
+      if(Math.random()>0.35)return;
+      var s=document.createElement('div');
+      s.textContent='✨';
+      s.style.cssText='position:fixed;left:'+e.clientX+'px;top:'+e.clientY+'px;'+
+        'pointer-events:none;z-index:9;font-size:16px;transition:all .8s ease-out;opacity:1;';
+      document.body.appendChild(s);
+      requestAnimationFrame(function(){
+        s.style.transform='translateY(24px) scale(.2)';s.style.opacity='0';
+      });
+      setTimeout(function(){s.remove();},800);
+    });
+  })();
+
+  /* mini sigla con Web Audio (parte solo al click, niente autoplay molesto) */
+  document.getElementById('play').addEventListener('click',function(){
+    try{
+      var ac=new (window.AudioContext||window.webkitAudioContext)();
+      var BEAT=0.2; // durata di un tempo in secondi
+      // sigla 8-bit spettrale in tema con «Dracula Yeye» 🧛 — coppie [frequenza, tempi]; 0 = pausa
+      var seq=[
+        [440,1],[523,1],[659,1],[880,1],
+        [831,0.5],[880,0.5],[831,0.5],[880,1],[0,0.5],
+        [880,1],[784,1],[698,1],[659,1],
+        [587,0.5],[523,0.5],[493.88,0.5],[440,1.5],[0,0.5],
+        [440,0.5],[466.16,0.5],[493.88,0.5],[523.25,0.5],[554.37,0.5],[587.33,0.5],[622.25,0.5],[659.25,1],
+        [880,0.5],[830.61,0.5],[880,0.5],[659.25,0.5],[523.25,0.5],[440,2]
+      ];
+      var t=ac.currentTime;
+      seq.forEach(function(n){
+        var f=n[0], dur=n[1]*BEAT;
+        if(f>0){
+          var o=ac.createOscillator(),g=ac.createGain();
+          o.type='sawtooth';o.frequency.value=f;
+          o.connect(g);g.connect(ac.destination);
+          g.gain.setValueAtTime(0.0001,t);
+          g.gain.exponentialRampToValueAtTime(0.12,t+0.02);
+          g.gain.exponentialRampToValueAtTime(0.0001,t+dur*0.9);
+          o.start(t);o.stop(t+dur);
+        }
+        t+=dur;
+      });
+    }catch(e){alert('La musica non parte su questo browser, ma fa lo stesso scena 💖');}
+  });
+
+  /* 🥚 easter egg: digita "matteo" e compare la firma nascosta */
+  (function(){
+    var egg=document.getElementById('firma-egg');
+    var target='matteo', buf='';
+    function open(){ egg.classList.add('show'); egg.setAttribute('aria-hidden','false'); chime(); }
+    function close(){ egg.classList.remove('show'); egg.setAttribute('aria-hidden','true'); }
+    document.addEventListener('keydown',function(e){
+      if(e.key==='Escape'){ close(); return; }
+      if(e.key && e.key.length===1){
+        buf=(buf+e.key.toLowerCase()).slice(-target.length);
+        if(buf===target) open();
+      }
+    });
+    document.getElementById('egg-close').addEventListener('click',close);
+    egg.addEventListener('click',function(e){ if(e.target===egg) close(); });
+    function chime(){
+      try{
+        var ac=new (window.AudioContext||window.webkitAudioContext)();
+        [659.25,830.61,987.77,1318.5].forEach(function(f,i){
+          var o=ac.createOscillator(),g=ac.createGain();
+          o.type='triangle';o.frequency.value=f;o.connect(g);g.connect(ac.destination);
+          var t=ac.currentTime+i*0.09;
+          g.gain.setValueAtTime(0.0001,t);
+          g.gain.exponentialRampToValueAtTime(0.14,t+0.02);
+          g.gain.exponentialRampToValueAtTime(0.0001,t+0.25);
+          o.start(t);o.stop(t+0.26);
+        });
+      }catch(e){}
+    }
+  })();
+
+  /* firma nascosta anche nella console del browser (per chi guarda il codice) */
+  console.log('%c✶ sofianonazzeccauna.com — coded with 🖤 by Matteo ✶','color:#ff3d9a;font-size:14px;font-weight:bold;text-shadow:0 0 6px #7a2ed6;');
+</script>
+</body>
+</html>
