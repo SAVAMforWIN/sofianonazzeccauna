@@ -46,6 +46,7 @@
     text-align:center;
     cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Ctext y='22' font-size='22'%3E%E2%9C%A8%3C/text%3E%3C/svg%3E") 4 4, auto;
     overflow-x:hidden;
+    touch-action:manipulation; /* mobile: doppio tap affidabile, niente zoom-su-doppio-tap */
   }
 
   /* decorazioni grafiche fisse agli angoli (non toccano il layout) */
@@ -382,7 +383,7 @@
         <div class="egg-star">✧･ﾟ*☆*ﾟ･✧</div>
         <p class="egg-title">~ coded with 🖤 by <b>Matteo</b> ~</p>
         <p class="egg-sub">per Sofia, che non ne azzecca una 💜</p>
-        <p class="egg-hint">(premi ESC o ✕ per chiudere)</p>
+        <p class="egg-hint">(ESC, ✕ o tocca fuori per chiudere)</p>
       </div>
     </div>
   </div>
@@ -461,6 +462,26 @@
     });
     document.getElementById('egg-close').addEventListener('click',close);
     egg.addEventListener('click',function(e){ if(e.target===egg) close(); });
+
+    // 📱 mobile: doppio tap in un punto qualsiasi apre la firma (senza tastiera)
+    var lastTap=0,lastX=0,lastY=0,sx=0,sy=0;
+    document.addEventListener('touchstart',function(e){
+      var tch=e.touches[0]; if(tch){sx=tch.clientX;sy=tch.clientY;}
+    },{passive:true});
+    document.addEventListener('touchend',function(e){
+      if(egg.classList.contains('show')) return;            // già aperta
+      if(e.touches && e.touches.length>0) return;           // multi-touch (pinch): ignora
+      var tch=(e.changedTouches&&e.changedTouches[0])||{};
+      var x=tch.clientX||0, y=tch.clientY||0;
+      if(Math.abs(x-sx)>12 || Math.abs(y-sy)>12){ lastTap=0; return; } // era uno swipe, non un tap
+      var now=e.timeStamp;
+      if(now-lastTap<350 && Math.abs(x-lastX)<45 && Math.abs(y-lastY)<45){
+        open(); lastTap=0;                                   // due tap ravvicinati = doppio tap
+      }else{
+        lastTap=now; lastX=x; lastY=y;
+      }
+    },{passive:true});
+
     function chime(){
       try{
         var ac=new (window.AudioContext||window.webkitAudioContext)();
