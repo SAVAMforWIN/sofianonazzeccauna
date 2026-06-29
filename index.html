@@ -300,7 +300,7 @@
   .gb-status{text-align:center;color:var(--ink-dim);font-style:italic;padding:10px;}
   .gb-status .gb-btn{font-style:normal;margin-top:8px;}
   .gb-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;}
-  .gb-item{display:flex;gap:10px;background:var(--bg-2);border-left:6px solid var(--pink);
+  .gb-item{display:flex;align-items:center;gap:10px;background:var(--bg-2);border-left:6px solid var(--pink);
     border-radius:6px;padding:10px 12px;box-shadow:2px 2px 0 rgba(122,46,214,.5);}
   .gb-ava{flex:none;width:30px;height:30px;border-radius:50%;background:var(--pink);color:#1a0733;
     border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:bold;
@@ -309,6 +309,34 @@
   .gb-meta{font-size:12px;color:var(--ink-dim);margin-bottom:2px;}
   .gb-meta b{color:#fff;}
   .gb-txt{color:var(--ink);font-size:15px;line-height:1.4;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere;}
+
+  /* 🏆 classifica cattivelli (in cima) + pulsanti di voto (sul guestbook) */
+  .lb-top{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;}
+  .lb-row{display:flex;align-items:center;gap:10px;background:var(--bg-2);border-radius:6px;
+    padding:8px 10px;box-shadow:2px 2px 0 rgba(122,46,214,.5);}
+  .lb-row.lb-1{border:2px solid #ffd700;box-shadow:0 0 12px rgba(255,215,0,.5);}
+  .lb-rank{font-size:22px;width:30px;text-align:center;flex:none;}
+  .lb-rn{flex:1;min-width:0;}
+  .lb-rn b{color:#fff;display:block;font-size:14px;}
+  .lb-rm{display:block;font-size:12px;color:var(--ink-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .lb-rv{flex:none;font-weight:bold;color:var(--pink);font-size:15px;background:#0c0518;
+    border:2px solid var(--pink);border-radius:14px;padding:2px 10px;text-shadow:0 0 6px var(--pink-glow);}
+  .lb-status{text-align:center;color:var(--ink-dim);font-style:italic;padding:8px;}
+  @keyframes lbpulse{0%,100%{box-shadow:0 0 6px var(--pink-glow);}50%{box-shadow:0 0 16px var(--pink-glow);}}
+  .lb-banner{display:block;text-align:center;margin:12px 0 0;padding:9px;border-radius:8px;font-weight:bold;
+    color:#fff;background:linear-gradient(#2a1450,#160a2b);border:2px dashed var(--pink);
+    text-shadow:0 0 6px var(--pink-glow);text-decoration:none;animation:lbpulse 1.8s ease-in-out infinite;}
+  .lb-banner:hover{color:#fff;background:#341a5e;text-shadow:0 0 10px var(--pink);}
+  .gb-vote{flex:none;align-self:center;cursor:pointer;font-family:inherit;font-weight:bold;font-size:15px;color:#fff;
+    background:linear-gradient(var(--viola-lt),#5e22b0);border:2px outset #b98cff;border-radius:18px;
+    padding:6px 12px;min-width:66px;text-shadow:0 0 6px var(--pink-glow);}
+  .gb-vote:active{border-style:inset;}
+  .gb-vote.on{background:linear-gradient(#ff5fb0,#c01e6e);border:2px solid #fff;box-shadow:0 0 12px var(--pink-glow);}
+  .gb-vote:disabled{opacity:.6;cursor:wait;}
+  .gb-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;
+    background:#160a2b;color:#fff;border:2px solid var(--pink);border-radius:10px;padding:10px 16px;
+    font-weight:bold;box-shadow:0 0 18px var(--pink-glow);max-width:90vw;text-align:center;transition:opacity .4s;}
+  .gb-toast.out{opacity:0;}
 </style>
 </head>
 <body>
@@ -338,6 +366,18 @@
         <span>0</span><span>0</span><span>0</span><span>1</span><span>3</span><span>3</span><span>7</span>
       </div>
       <p style="margin:8px 0 0;font-size:13px;">(probabilmente sei sempre tu, Sofia)</p>
+    </div>
+
+    <div class="divisore">⋆ ✰ ⋆ 🏆 ⋆ ✰ ⋆</div>
+
+    <!-- 🏆 CLASSIFICA CATTIVELLI: sola visualizzazione. Si vota in fondo, sul guestbook. -->
+    <div class="box lb" id="leaderboard">
+      <h2>🏆 Classifica Cattivelli della Settimana 🏆</h2>
+      <p style="text-align:center;font-size:13px;color:var(--pink-lt);margin:0 0 4px;">i 5 commenti più cattivi votati da voi · si azzera ogni lunedì</p>
+      <p style="text-align:center;font-size:13px;color:var(--ink-dim);margin:0 0 10px;">⏳ si resetta tra <b id="lb-count" style="color:var(--verde);font-family:'Courier New',monospace;">…</b></p>
+      <ol class="lb-top" id="lb-top"></ol>
+      <p class="lb-status" id="lb-status">Caricamento classifica…</p>
+      <a class="lb-banner" href="#guestbook" id="lb-banner">👇 Vota i commenti in fondo alla pagina 👇</a>
     </div>
 
     <div class="divisore">⋆｡˚ ☁︎ ˚｡⋆｡˚☽˚｡⋆ ♡ ⋆｡˚ ☾ ˚｡⋆ ☁︎ ˚｡⋆</div>
@@ -598,7 +638,7 @@
   (function(){
     var GB_URL='https://czfzbprwuxrlezbxcutn.supabase.co/rest/v1';
     var GB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6ZnpicHJ3dXhybGV6YnhjdXRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3MzYxNzQsImV4cCI6MjA5ODMxMjE3NH0.fxa8s_bIDE-8-tibT5xURVh1tl02gcHdLyjUryiInXI';
-    var MIN_NICK=2, MAX_NICK=20, MAX_MSG=280, LIMIT=100;
+    var MIN_NICK=2, MAX_NICK=20, MAX_MSG=280;
 
     var gate=document.getElementById('gb-gate'), app=document.getElementById('gb-app');
     if(!gate||!app) return;
@@ -610,7 +650,34 @@
 
     var me=localStorage.getItem('sofia_nick')||'';
 
+    /* identità anonima per i voti: un codice casuale salvato in questo browser */
+    var voter=localStorage.getItem('sofia_voter');
+    if(!voter){ voter=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():('v'+Date.now()+Math.random().toString(36).slice(2)); localStorage.setItem('sofia_voter',voter); }
+
+    /* elementi della classifica (in cima alla pagina) */
+    var topEl=document.getElementById('lb-top'), lbStatus=document.getElementById('lb-status'), countEl=document.getElementById('lb-count');
+    var medals=['🥇','🥈','🥉','4️⃣','5️⃣'];
+
     function el(t,c,txt){var e=document.createElement(t);if(c)e.className=c;if(txt!=null)e.textContent=txt;return e;}
+
+    /* chiamata alle funzioni del database (RPC); in caso d'errore riporta il messaggio del server */
+    function rpc(name,body){
+      return fetch(GB_URL+'/rpc/'+name,{method:'POST',
+        headers:{apikey:GB_KEY,Authorization:'Bearer '+GB_KEY,'Content-Type':'application/json'},
+        body:JSON.stringify(body||{})}).then(function(r){
+          return r.json().catch(function(){return null;}).then(function(data){
+            if(!r.ok){ var e=new Error((data&&data.message)||('HTTP '+r.status)); e.status=r.status; throw e; }
+            return data;
+          });
+        });
+    }
+
+    /* mini avviso a comparsa (per gli errori di voto, visibile anche senza nick) */
+    function toast(text){
+      var t=el('div','gb-toast',text); document.body.appendChild(t);
+      setTimeout(function(){ t.classList.add('out'); },2500);
+      setTimeout(function(){ t.remove(); },3000);
+    }
 
     /* tempo "umano" in italiano, senza dipendenze */
     function quando(iso){
@@ -627,7 +694,29 @@
     function showGate(){ app.hidden=true; gate.hidden=false; nick.value=me; nick.focus(); nick.select(); }
 
     /* IMPORTANTE: i testi dei visitatori entrano SOLO via textContent,
-       mai come HTML → un messaggio non può iniettare codice nella pagina. */
+       mai come HTML → un messaggio non può iniettare codice nella pagina.
+       (Il conteggio voti è un numero, quindi è sicuro anche via innerHTML.) */
+    function paintVote(btn,m){
+      btn.className='gb-vote'+(m.voted?' on':'');
+      btn.setAttribute('aria-pressed',m.voted?'true':'false');
+      btn.innerHTML='😈 <span>'+(m.votes||0)+'</span>'+(m.voted?' ✓':'');
+    }
+    function voteBtn(m){
+      var btn=el('button','gb-vote'); btn.type='button';
+      btn.setAttribute('aria-label','Vota questo commento come cattivello');
+      paintVote(btn,m);
+      btn.addEventListener('click',function(){
+        btn.disabled=true;
+        rpc('toggle_vote',{p_message_id:m.id,p_voter:voter}).then(function(rows){
+          var r=(rows&&rows[0])||{}; m.votes=r.vote_count; m.voted=r.voted;
+          btn.disabled=false; paintVote(btn,m); loadLeaderboard();
+        }).catch(function(err){
+          btn.disabled=false;
+          toast((err&&err.message&&/voti|rete/i.test(err.message))?err.message:'Voto non riuscito 😢 riprova');
+        });
+      });
+      return btn;
+    }
     function renderList(rows){
       listEl.textContent='';
       rows.forEach(function(m){
@@ -640,6 +729,7 @@
         bub.appendChild(meta);
         bub.appendChild(el('div','gb-txt',m.message));
         li.appendChild(bub);
+        li.appendChild(voteBtn(m));
         listEl.appendChild(li);
       });
       tot.textContent=rows.length?('('+rows.length+(rows.length===1?' firma)':' firme)')):'';
@@ -647,9 +737,7 @@
 
     function load(){
       statusEl.hidden=false; statusEl.textContent='Caricamento del guestbook…'; listEl.hidden=true;
-      fetch(GB_URL+'/guestbook?select=nick,message,created_at&order=created_at.desc&limit='+LIMIT,
-            {headers:{apikey:GB_KEY,Authorization:'Bearer '+GB_KEY}})
-        .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+      rpc('list_messages',{p_voter:voter})
         .then(function(rows){
           if(!rows.length){ statusEl.textContent='Ancora nessun messaggio… sii il primo a scrivere a Sofia! 🦋'; tot.textContent=''; return; }
           statusEl.hidden=true; listEl.hidden=false; renderList(rows);
@@ -660,6 +748,36 @@
           var b=el('button','gb-btn','Riprova'); b.type='button'; b.addEventListener('click',load);
           statusEl.appendChild(b);
         });
+    }
+
+    /* la classifica della settimana (in cima) */
+    function loadLeaderboard(){
+      if(!topEl) return;
+      rpc('weekly_leaderboard',{}).then(function(rows){
+        topEl.textContent='';
+        if(!rows.length){ lbStatus.hidden=false; lbStatus.textContent='Nessun voto questa settimana… vota in fondo! 😈'; return; }
+        lbStatus.hidden=true;
+        rows.forEach(function(c,i){
+          var li=el('li','lb-row'+(i===0?' lb-1':''));
+          li.appendChild(el('span','lb-rank',medals[i]||String(i+1)));
+          var rn=el('span','lb-rn'); rn.appendChild(el('b',null,c.nick)); rn.appendChild(el('span','lb-rm',c.message));
+          li.appendChild(rn);
+          li.appendChild(el('span','lb-rv','😈 '+c.votes));
+          topEl.appendChild(li);
+        });
+      }).catch(function(){ if(lbStatus){ lbStatus.hidden=false; lbStatus.textContent='Classifica non disponibile adesso 😢'; } });
+    }
+
+    /* conto alla rovescia al prossimo lunedì (quando la classifica si azzera) */
+    function nextMonday(){
+      var now=new Date(), d=new Date(now.getFullYear(),now.getMonth(),now.getDate(),0,0,0,0);
+      var day=(d.getDay()+6)%7; d.setDate(d.getDate()+(7-day)); return d;
+    }
+    function tick(){
+      if(!countEl) return;
+      var ms=nextMonday()-new Date(); if(ms<0) ms=0;
+      var s=Math.floor(ms/1000), g=Math.floor(s/86400), h=Math.floor(s%86400/3600), m=Math.floor(s%3600/60), ss=s%60;
+      countEl.textContent=g+'g '+h+'h '+m+'m '+ss+'s';
     }
 
     function tryEnter(){
@@ -697,6 +815,8 @@
 
     if(me) showApp();
     load();
+    loadLeaderboard();
+    tick(); setInterval(tick,1000);
   })();
 
   /* firma nascosta anche nella console del browser (per chi guarda il codice) */
