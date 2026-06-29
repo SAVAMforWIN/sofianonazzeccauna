@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- niente motori di ricerca: il sito gira solo tra chi ha il link -->
+<meta name="robots" content="noindex, nofollow">
 <title>★·.·´¯`·.·★ sofianonazzeccauna.com ★·.·´¯`·.·★</title>
 <!-- Favicon farfallina viola in SVG, niente file esterni -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext y='14' font-size='14'%3E%F0%9F%A6%8B%3C/text%3E%3C/svg%3E">
@@ -267,6 +269,46 @@
   }
   .egg-sub{font-size:14px;color:var(--pink-lt);margin:4px 0;}
   .egg-hint{font-size:11px;color:var(--ink-dim);margin-top:10px;}
+
+  /* ============================================================
+     ✎ GUESTBOOK "Scrivi a Sofia" — messaggi pubblici via Supabase
+     Stessa pelle del sito: viola/nero + rosa neon, niente nuovi colori.
+     ============================================================ */
+  .gb-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+  .gb-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;}
+  .gb-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .gb-field{flex:1;min-width:0;background:#0c0518;border:2px inset #3a1f6b;color:#cdb6ff;padding:8px 10px;border-radius:4px;font:inherit;}
+  .gb-field:focus{outline:none;border-color:var(--pink);box-shadow:0 0 10px var(--pink-glow);}
+  .gb-btn{font-family:inherit;font-size:15px;font-weight:bold;cursor:pointer;color:#fff;
+    background:linear-gradient(var(--viola-lt),#5e22b0);border:2px outset #b98cff;border-radius:8px;
+    padding:8px 14px;text-shadow:0 0 6px var(--pink-glow);box-shadow:0 0 12px rgba(163,102,255,.5);}
+  .gb-btn:active{border-style:inset;}
+  .gb-btn:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.4);box-shadow:none;}
+  .gb-err{color:#ff9ec6;min-height:1.1em;font-size:13px;font-weight:bold;text-align:center;margin:8px 0 0;}
+  .gb-hint{font-size:12px;color:var(--ink-dim);text-align:center;margin:8px 0 0;}
+  .gb-hello{display:flex;justify-content:space-between;align-items:center;gap:8px;
+    background:#0c0518;border:2px dashed var(--viola);border-radius:8px;padding:6px 10px;margin-bottom:10px;font-size:15px;}
+  .gb-hello b{color:#fff;}
+  .gb-link{background:none;border:none;color:var(--pink-lt);text-decoration:underline;cursor:pointer;font:inherit;font-weight:bold;}
+  .gb-link:hover{color:#fff;text-shadow:0 0 8px var(--pink);}
+  .gb-area{width:100%;box-sizing:border-box;background:#0c0518;border:2px inset #3a1f6b;color:#cdb6ff;
+    padding:8px 10px;border-radius:4px;font:inherit;resize:vertical;min-height:64px;}
+  .gb-area:focus{outline:none;border-color:var(--pink);box-shadow:0 0 10px var(--pink-glow);}
+  .gb-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px;}
+  .gb-count{font-size:12px;color:var(--ink-dim);font-family:"Courier New",monospace;}
+  .gb-board-t{text-align:center;color:var(--pink-lt);font-weight:bold;margin:0 0 10px;}
+  .gb-status{text-align:center;color:var(--ink-dim);font-style:italic;padding:10px;}
+  .gb-status .gb-btn{font-style:normal;margin-top:8px;}
+  .gb-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;}
+  .gb-item{display:flex;gap:10px;background:var(--bg-2);border-left:6px solid var(--pink);
+    border-radius:6px;padding:10px 12px;box-shadow:2px 2px 0 rgba(122,46,214,.5);}
+  .gb-ava{flex:none;width:30px;height:30px;border-radius:50%;background:var(--pink);color:#1a0733;
+    border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:bold;
+    text-transform:uppercase;box-shadow:0 0 8px var(--pink);}
+  .gb-bub{flex:1;min-width:0;}
+  .gb-meta{font-size:12px;color:var(--ink-dim);margin-bottom:2px;}
+  .gb-meta b{color:#fff;}
+  .gb-txt{color:var(--ink);font-size:15px;line-height:1.4;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere;}
 </style>
 </head>
 <body>
@@ -366,6 +408,54 @@
       <p style="font-size:13px;margin-top:12px;">…oppure ascolta la mitica sigla 8-bit del sito 👇</p>
       <button id="play">▶ Riproduci la sigla ♪</button>
       <p style="font-size:12px;margin-top:6px;">(per Spotify serve internet; la sigla 8-bit funziona sempre)</p>
+    </div>
+
+    <!-- ============================================================
+         ✎ GUESTBOOK "Scrivi a Sofia" — messaggi pubblici dei visitatori
+         I messaggi vivono in un piccolo database online (Supabase).
+         Prima si sceglie un nick, poi si firma; si legge anche senza nick.
+         ============================================================ -->
+    <div class="divisore">♥•·.·´¯`·.·•♥ scrivi qualcosa ♥•·.·´¯`·.·•♥</div>
+
+    <div class="box gb" id="guestbook">
+      <h2>✎ Scrivi a Sofia ✎</h2>
+      <p style="text-align:center;font-size:14px;margin:0 0 12px;">
+        Lascia un messaggio a Sofia! Prima scegli un <b>nickname</b>, poi firma il guestbook. ✨
+      </p>
+
+      <!-- 1) cancello: prima si sceglie il nick -->
+      <div class="gb-gate" id="gb-gate">
+        <div class="gb-row">
+          <label class="gb-sr" for="gb-nick">Il tuo nickname</label>
+          <input id="gb-nick" class="gb-field" type="text" maxlength="20" placeholder="es. xX_vampira_Xx" autocomplete="off">
+          <button id="gb-enter" class="gb-btn" type="button">Entra ♥</button>
+        </div>
+        <p class="gb-err" id="gb-nick-err" role="alert" aria-live="polite"></p>
+        <p class="gb-hint">Niente registrazione, niente email. Solo un nick per firmare i tuoi messaggi.</p>
+      </div>
+
+      <!-- 2) composizione: appare dopo aver scelto il nick -->
+      <div class="gb-app" id="gb-app" hidden>
+        <div class="gb-hello">
+          <span>Ciao, <b id="gb-who">…</b>! 💜</span>
+          <button id="gb-change" class="gb-link" type="button">cambia nick</button>
+        </div>
+        <label class="gb-sr" for="gb-msg">Messaggio per Sofia</label>
+        <textarea id="gb-msg" class="gb-area" maxlength="280" rows="3" placeholder="Scrivi qualcosa di carino (o una cazzatina) per Sofia…"></textarea>
+        <!-- trappola anti-bot: invisibile agli umani, i bot la riempiono -->
+        <input id="gb-hp" class="gb-hp" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="gb-foot">
+          <span class="gb-count" id="gb-count">0 / 280</span>
+          <button id="gb-send" class="gb-btn" type="button" disabled>Firma il guestbook ♥</button>
+        </div>
+        <p class="gb-err" id="gb-send-err" role="alert" aria-live="polite"></p>
+      </div>
+
+      <!-- 3) bacheca: sempre visibile, anche senza nick -->
+      <div class="divisore" style="margin:16px 0;">⋆｡˚ ☁︎ ˚｡⋆ ♡ ⋆｡˚ ☾ ˚｡⋆</div>
+      <p class="gb-board-t">★ Il guestbook di Sofia ★ <span id="gb-tot"></span></p>
+      <div class="gb-status" id="gb-status">Caricamento del guestbook…</div>
+      <ul class="gb-list" id="gb-list" hidden></ul>
     </div>
 
     <footer>
@@ -496,6 +586,117 @@
         });
       }catch(e){}
     }
+  })();
+
+  /* ============================================================
+     ✎ GUESTBOOK "Scrivi a Sofia" — salvataggio pubblico su Supabase
+     La chiave qui sotto è la chiave PUBBLICA "anon": è fatta apposta
+     per stare nel codice del sito e NON dà accesso da amministratore.
+     L'accesso vero è regolato dalle policy del database (solo
+     lettura + scrittura dall'esterno, niente cancellazione/modifica).
+     ============================================================ */
+  (function(){
+    var GB_URL='https://czfzbprwuxrlezbxcutn.supabase.co/rest/v1';
+    var GB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6ZnpicHJ3dXhybGV6YnhjdXRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3MzYxNzQsImV4cCI6MjA5ODMxMjE3NH0.fxa8s_bIDE-8-tibT5xURVh1tl02gcHdLyjUryiInXI';
+    var MIN_NICK=2, MAX_NICK=20, MAX_MSG=280, LIMIT=100;
+
+    var gate=document.getElementById('gb-gate'), app=document.getElementById('gb-app');
+    if(!gate||!app) return;
+    var nick=document.getElementById('gb-nick'), enter=document.getElementById('gb-enter'), nickErr=document.getElementById('gb-nick-err');
+    var who=document.getElementById('gb-who'), change=document.getElementById('gb-change');
+    var msg=document.getElementById('gb-msg'), hp=document.getElementById('gb-hp');
+    var count=document.getElementById('gb-count'), send=document.getElementById('gb-send'), sendErr=document.getElementById('gb-send-err');
+    var statusEl=document.getElementById('gb-status'), listEl=document.getElementById('gb-list'), tot=document.getElementById('gb-tot');
+
+    var me=localStorage.getItem('sofia_nick')||'';
+
+    function el(t,c,txt){var e=document.createElement(t);if(c)e.className=c;if(txt!=null)e.textContent=txt;return e;}
+
+    /* tempo "umano" in italiano, senza dipendenze */
+    function quando(iso){
+      var t=Date.parse(iso); if(isNaN(t)) return '';
+      var s=Math.max(0,(Date.now()-t)/1000);
+      if(s<60) return 'proprio ora';
+      if(s<3600) return Math.floor(s/60)+'m fa';
+      if(s<86400) return Math.floor(s/3600)+'h fa';
+      if(s<604800) return Math.floor(s/86400)+'g fa';
+      return new Date(t).toLocaleDateString('it-IT',{day:'numeric',month:'short'});
+    }
+
+    function showApp(){ who.textContent=me; gate.hidden=true; app.hidden=false; }
+    function showGate(){ app.hidden=true; gate.hidden=false; nick.value=me; nick.focus(); nick.select(); }
+
+    /* IMPORTANTE: i testi dei visitatori entrano SOLO via textContent,
+       mai come HTML → un messaggio non può iniettare codice nella pagina. */
+    function renderList(rows){
+      listEl.textContent='';
+      rows.forEach(function(m){
+        var li=el('li','gb-item');
+        li.appendChild(el('div','gb-ava',((m.nick||'?').trim()[0]||'?')));
+        var bub=el('div','gb-bub');
+        var meta=el('div','gb-meta');
+        meta.appendChild(el('b',null,m.nick));
+        meta.appendChild(el('span',null,' · '+quando(m.created_at)));
+        bub.appendChild(meta);
+        bub.appendChild(el('div','gb-txt',m.message));
+        li.appendChild(bub);
+        listEl.appendChild(li);
+      });
+      tot.textContent=rows.length?('('+rows.length+(rows.length===1?' firma)':' firme)')):'';
+    }
+
+    function load(){
+      statusEl.hidden=false; statusEl.textContent='Caricamento del guestbook…'; listEl.hidden=true;
+      fetch(GB_URL+'/guestbook?select=nick,message,created_at&order=created_at.desc&limit='+LIMIT,
+            {headers:{apikey:GB_KEY,Authorization:'Bearer '+GB_KEY}})
+        .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+        .then(function(rows){
+          if(!rows.length){ statusEl.textContent='Ancora nessun messaggio… sii il primo a scrivere a Sofia! 🦋'; tot.textContent=''; return; }
+          statusEl.hidden=true; listEl.hidden=false; renderList(rows);
+        })
+        .catch(function(){
+          statusEl.textContent=''; tot.textContent='';
+          statusEl.appendChild(el('div',null,'Non riesco a caricare il guestbook adesso 😢'));
+          var b=el('button','gb-btn','Riprova'); b.type='button'; b.addEventListener('click',load);
+          statusEl.appendChild(b);
+        });
+    }
+
+    function tryEnter(){
+      var v=nick.value.trim();
+      if(v.length<MIN_NICK){ nickErr.textContent='Scegli un nick di almeno '+MIN_NICK+' lettere ✨'; nick.focus(); return; }
+      me=v.slice(0,MAX_NICK); localStorage.setItem('sofia_nick',me); nickErr.textContent='';
+      showApp(); msg.focus();
+    }
+
+    enter.addEventListener('click',tryEnter);
+    nick.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); tryEnter(); } });
+    nick.addEventListener('input',function(){ if(nickErr.textContent) nickErr.textContent=''; });
+    change.addEventListener('click',showGate);
+
+    msg.addEventListener('input',function(){
+      count.textContent=msg.value.length+' / '+MAX_MSG;
+      send.disabled=msg.value.trim().length===0;
+    });
+
+    function submit(){
+      var text=msg.value.trim();
+      if(!text) return;
+      if(hp.value){ msg.value=''; count.textContent='0 / '+MAX_MSG; send.disabled=true; return; } /* bot: finto-OK */
+      var label=send.textContent;
+      send.disabled=true; send.textContent='Invio…'; sendErr.textContent='';
+      fetch(GB_URL+'/guestbook',{
+        method:'POST',
+        headers:{apikey:GB_KEY,Authorization:'Bearer '+GB_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+        body:JSON.stringify({nick:me,message:text.slice(0,MAX_MSG)})
+      }).then(function(r){ if(!r.ok) throw new Error(r.status); })
+        .then(function(){ msg.value=''; count.textContent='0 / '+MAX_MSG; send.textContent=label; send.disabled=true; load(); })
+        .catch(function(){ sendErr.textContent='Non sono riuscito a inviare 😢 riprova tra un attimo.'; send.textContent=label; send.disabled=false; });
+    }
+    send.addEventListener('click',submit);
+
+    if(me) showApp();
+    load();
   })();
 
   /* firma nascosta anche nella console del browser (per chi guarda il codice) */
