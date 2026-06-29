@@ -519,15 +519,78 @@
   </div>
 
 <script>
-  /* contatore che fa "ding" e sale di qualche visita */
+  /* ============================================================
+     Backend condiviso (Supabase): un unico posto per l'indirizzo,
+     la chiave PUBBLICA "anon" e l'helper per chiamare le funzioni
+     del database (RPC). La chiave "anon" è fatta apposta per stare
+     nel codice del sito: NON dà accesso da amministratore, l'accesso
+     vero lo decidono le policy del database. Lo usano sia il
+     contatore visite sia il guestbook.
+     ============================================================ */
+  var SofiaDB=(function(){
+    var URL='https://czfzbprwuxrlezbxcutn.supabase.co/rest/v1';
+    var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6ZnpicHJ3dXhybGV6YnhjdXRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3MzYxNzQsImV4cCI6MjA5ODMxMjE3NH0.fxa8s_bIDE-8-tibT5xURVh1tl02gcHdLyjUryiInXI';
+    /* chiama una funzione del database; in caso d'errore propaga il messaggio del server */
+    function rpc(name,body){
+      return fetch(URL+'/rpc/'+name,{method:'POST',
+        headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},
+        body:JSON.stringify(body||{})}).then(function(r){
+          return r.json().catch(function(){return null;}).then(function(data){
+            if(!r.ok){ var e=new Error((data&&data.message)||('HTTP '+r.status)); e.status=r.status; throw e; }
+            return data;
+          });
+        });
+    }
+    return {URL:URL,KEY:KEY,rpc:rpc};
+  })();
+
+  /* ============================================================
+     Contatore visite REALE (niente più numeri a caso).
+     Il totale vive su Supabase: bump_visits() somma 1 e restituisce
+     il nuovo totale, get_visits() lo legge soltanto. Contiamo UNA
+     visita per sessione del browser: i ricaricamenti nella stessa
+     scheda non gonfiano il numero, ma una nuova visita (anche di
+     Sofia, un altro giorno) sì. Se il database non è ancora pronto
+     resta il numero segnaposto già scritto nell'HTML: nessun numero finto.
+     ============================================================ */
   (function(){
     var box=document.getElementById('contatore');
-    var n=parseInt([].map.call(box.children,function(s){return s.textContent;}).join(''),10);
-    setInterval(function(){
-      n+=Math.floor(Math.random()*3);
-      var s=String(n).padStart(7,'0').split('');
+    if(!box||!window.SofiaDB) return;
+    var DIGITS=box.children.length;
+
+    function render(n){
+      n=Math.max(0,Math.floor(n||0));
+      var s=String(n).padStart(DIGITS,'0').slice(-DIGITS).split('');
       [].forEach.call(box.children,function(c,i){c.textContent=s[i];});
-    },2500);
+    }
+    function current(){
+      return parseInt([].map.call(box.children,function(s){return s.textContent;}).join(''),10)||0;
+    }
+    /* rullata "odometro", una sola volta, dal valore mostrato fino al totale reale */
+    function rollTo(to){
+      var from=current();
+      if(!(to>from)){ render(to); return; }
+      var span=to-from, steps=Math.min(36,span), i=0;
+      var timer=setInterval(function(){
+        i++; render(Math.round(from+span*(i/steps)));
+        if(i>=steps){ clearInterval(timer); render(to); }
+      },45);
+    }
+
+    var K_DONE='sofia_counted', K_SEEN='sofia_visits';
+    var firstThisSession=!sessionStorage.getItem(K_DONE);
+
+    /* mostra subito l'ultimo totale noto (se c'è) per evitare lo "scatto" dal segnaposto */
+    var cached=parseInt(sessionStorage.getItem(K_SEEN),10);
+    if(!isNaN(cached)) render(cached);
+
+    SofiaDB.rpc(firstThisSession?'bump_visits':'get_visits',{}).then(function(total){
+      total=parseInt(total,10);
+      if(isNaN(total)) return;
+      sessionStorage.setItem(K_DONE,'1');
+      sessionStorage.setItem(K_SEEN,String(total));
+      rollTo(total);
+    }).catch(function(){ /* database non ancora pronto: resta il segnaposto, nessun numero finto */ });
   })();
 
   /* scia di stelline che segue il mouse */
@@ -629,15 +692,13 @@
   })();
 
   /* ============================================================
-     ✎ GUESTBOOK "Scrivi a Sofia" — salvataggio pubblico su Supabase
-     La chiave qui sotto è la chiave PUBBLICA "anon": è fatta apposta
-     per stare nel codice del sito e NON dà accesso da amministratore.
+     ✎ GUESTBOOK "Scrivi a Sofia" — salvataggio pubblico su Supabase.
+     Indirizzo, chiave pubblica "anon" e helper RPC stanno in SofiaDB
+     (in cima a questo script), condivisi con il contatore visite.
      L'accesso vero è regolato dalle policy del database (solo
      lettura + scrittura dall'esterno, niente cancellazione/modifica).
      ============================================================ */
   (function(){
-    var GB_URL='https://czfzbprwuxrlezbxcutn.supabase.co/rest/v1';
-    var GB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6ZnpicHJ3dXhybGV6YnhjdXRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3MzYxNzQsImV4cCI6MjA5ODMxMjE3NH0.fxa8s_bIDE-8-tibT5xURVh1tl02gcHdLyjUryiInXI';
     var MIN_NICK=2, MAX_NICK=20, MAX_MSG=280;
 
     var gate=document.getElementById('gb-gate'), app=document.getElementById('gb-app');
@@ -660,17 +721,8 @@
 
     function el(t,c,txt){var e=document.createElement(t);if(c)e.className=c;if(txt!=null)e.textContent=txt;return e;}
 
-    /* chiamata alle funzioni del database (RPC); in caso d'errore riporta il messaggio del server */
-    function rpc(name,body){
-      return fetch(GB_URL+'/rpc/'+name,{method:'POST',
-        headers:{apikey:GB_KEY,Authorization:'Bearer '+GB_KEY,'Content-Type':'application/json'},
-        body:JSON.stringify(body||{})}).then(function(r){
-          return r.json().catch(function(){return null;}).then(function(data){
-            if(!r.ok){ var e=new Error((data&&data.message)||('HTTP '+r.status)); e.status=r.status; throw e; }
-            return data;
-          });
-        });
-    }
+    /* le funzioni del database si chiamano via l'helper condiviso SofiaDB */
+    function rpc(name,body){ return SofiaDB.rpc(name,body); }
 
     /* mini avviso a comparsa (per gli errori di voto, visibile anche senza nick) */
     function toast(text){
@@ -803,9 +855,9 @@
       if(hp.value){ msg.value=''; count.textContent='0 / '+MAX_MSG; send.disabled=true; return; } /* bot: finto-OK */
       var label=send.textContent;
       send.disabled=true; send.textContent='Invio…'; sendErr.textContent='';
-      fetch(GB_URL+'/guestbook',{
+      fetch(SofiaDB.URL+'/guestbook',{
         method:'POST',
-        headers:{apikey:GB_KEY,Authorization:'Bearer '+GB_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+        headers:{apikey:SofiaDB.KEY,Authorization:'Bearer '+SofiaDB.KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
         body:JSON.stringify({nick:me,message:text.slice(0,MAX_MSG)})
       }).then(function(r){ if(!r.ok) throw new Error(r.status); })
         .then(function(){ msg.value=''; count.textContent='0 / '+MAX_MSG; send.textContent=label; send.disabled=true; load(); })
